@@ -1,0 +1,66 @@
+### Docker Images ###
+-----------------------------------------------------------------------------------------------------------
+#Redis
+docker run -p 6379:6379 --name redisserver -d redis
+-----------------------------------------------------------------------------------------------------------
+#RDB Tool
+docker run -v rdbtools:/db -p 8001:8001 rdbtools/rdbtools:v0.9.42
+-----------------------------------------------------------------------------------------------------------
+#Elasticsearch
+docker-compose.yml
+version: '3.1'
+services:
+  elasticsearch:
+    image: elasticsearch:7.4.2
+    ports:
+      - '9200:9200'
+      - '9300:9300'
+    environment:
+      - discovery.type=single-node
+-----------------------------------------------------------------------------------------------------------	  
+#Kafka
+docker-compose.yml
+version: '3.1'
+services:
+  kafka:
+    image: spotify/kafka
+    ports:
+      - "2181:2181"
+      - "9092:9092"
+    hostname: localhost
+    container_name: kafka
+    environment:
+      - "ADVERTISED_HOST=localhost"
+      - "ADVERTISED_PORT=9092"
+      - "AUTO_CREATE_TOPICS=true"
+    command: >
+      bash -c
+      "(sleep 15s &&
+      /opt/kafka_2.11-0.10.1.0/bin/kafka-topics.sh
+      --create
+      --zookeeper
+      localhost:2181 --replication-factor 1 --partitions 1
+      --topic topic &) && (supervisord -n)"
+-----------------------------------------------------------------------------------------------------------	  
+#Postgres
+docker-compose.yml
+version: '3.1'
+services:
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: password
+-----------------------------------------------------------------------------------------------------------
+#Mongo
+docker-compose.yml
+version: '3.1'
+services:
+  mongo:
+    image: mongo
+    ports:
+      - '27017:27017'
+    command: --serviceExecutor adaptive
+-----------------------------------------------------------------------------------------------------------
